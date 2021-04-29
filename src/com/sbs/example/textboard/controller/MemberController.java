@@ -1,27 +1,12 @@
-package com.sbs.example.textboard;
+package com.sbs.example.textboard.controller;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Scanner;
+
 
 import com.sbs.example.textboard.util.DBUtil;
 import com.sbs.example.textboard.util.SecSql;
 
-public class MemberController {
-	
-	private Connection conn;
-	private Scanner sc;
-	
-	public void setConn(Connection conn) {
-		this.conn = conn;		
-	}
-
-	public void setScanner(Scanner sc) {
-		this.sc = sc;		
-	}
-	
-	
-	
+public class MemberController extends Controller{	
+		
 
 	public void join(String cmd) {
 		String loginId;
@@ -30,7 +15,6 @@ public class MemberController {
 		String name;
 		
 		
-		ArrayList<String> loginIdList = new ArrayList<String>();
 
 		System.out.println("==회원 가입==");
 		// 아이디 입력
