@@ -1,20 +1,25 @@
 package com.sbs.example.textboard.controller;
 
+import java.sql.Connection;
+import java.util.Scanner;
 
+import com.sbs.example.textboard.service.MemberService;
 
-import com.sbs.example.textboard.util.DBUtil;
-import com.sbs.example.textboard.util.SecSql;
+public class MemberController extends Controller {
 
-public class MemberController extends Controller{	
-		
+	private MemberService memberService;
+
+	public MemberController(Connection conn, Scanner sc) {
+		super(sc);
+
+		memberService = new MemberService(conn);
+	}
 
 	public void join(String cmd) {
 		String loginId;
 		String loginPw;
 		String loginPwConfirm;
 		String name;
-		
-		
 
 		System.out.println("==회원 가입==");
 		// 아이디 입력
@@ -24,29 +29,19 @@ public class MemberController extends Controller{
 
 			if (loginId.length() == 0) {
 				System.out.println("아이디를 입력해주세요.");
-				continue;					
+				continue;
 			}
-			// ------------------------
-			SecSql sql = new SecSql();
-			
-			sql.append("SELECT COUNT(*) > 0");
-			sql.append("FROM member");
-			sql.append("WHERE loginId = ?", loginId);
-			// ------------------------ -> DB에 있는 데이터에 접근해서 동일한 ID가 있는지 확인
-			
-			boolean isLoginIdDup = DBUtil.selectRowBooleanValue(conn, sql); 
-			
-			if(isLoginIdDup) {
+
+			boolean isLoginIdDup = memberService.isLoginIdDup(loginId);
+
+			if (isLoginIdDup) {
 				System.out.printf("%s는 이미 사용중인 아이디입니다. 다시 입력해주세요.\n", loginId);
 				continue;
 			}
-			
+
 			break;
 		}
-		
-		
-		
-		
+
 		// 비밀번호 입력
 		while (true) {
 			System.out.printf("비밀번호 입력 : ");
@@ -91,24 +86,11 @@ public class MemberController extends Controller{
 			}
 			break;
 		}
-		
-		SecSql sql = new SecSql();
-		
-		sql.append("INSERT INTO `member`");
-		sql.append("SET regDate = NOW()");
-		sql.append(", updateDate = NOW()");
-		sql.append(", loginId = ?", loginId);
-		sql.append(", loginPw = ?", loginPw);
-		sql.append(", `name` = ?", name);
-		
-		int id = DBUtil.insert(conn, sql);
-		
-		System.out.printf("%s님 환영합니다.\n", name);
-		
-	}
 
-	
-	
-	
+		int id = memberService.join(loginId, loginPw, name);
+
+		System.out.printf("%s님 환영합니다.\n", name);
+
+	}
 
 }
