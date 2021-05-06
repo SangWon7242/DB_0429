@@ -1,6 +1,5 @@
 package com.sbs.example.textboard;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,11 +12,13 @@ public class App {
 
 	public void run() {
 
-		Scanner sc = new Scanner(System.in);
+		Container.sc = new Scanner(System.in);
+		
+		Container.init();
 
 		while (true) {
 			System.out.printf("명령어) ");
-			String cmd = sc.nextLine().trim(); // trim - 공백 날려줌
+			String cmd = Container.sc.nextLine().trim(); // trim - 공백 날려줌
 
 			// DB 연결 시작
 			Connection conn = null; // 여권과도 같은 개념
@@ -33,8 +34,10 @@ public class App {
 			String url = "jdbc:mysql://127.0.0.1:3306/text_board?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
 			try {
 				conn = DriverManager.getConnection(url, "sbsst", "sbs123414");
-
-				int actionResult = action(conn, sc, cmd);
+				
+				
+				Container.conn = conn;
+				int actionResult = action(cmd);
 
 				if (actionResult == -1) {
 					break;
@@ -58,16 +61,22 @@ public class App {
 		}
 	}
 
-	private int action(Connection conn, Scanner sc, String cmd) {
+	private int action(String cmd) {
 
-		MemberController memberController = new MemberController(conn, sc);
+		MemberController memberController = new MemberController();
 		
-		ArticleController articleController = new ArticleController(conn, sc);	
+		ArticleController articleController = new ArticleController();	
 
 		if (cmd.equals("member join")) {
 			memberController.join(cmd);
 
-		} else if (cmd.equals("article add")) {
+		}
+		
+		else if(cmd.equals("member login")) {
+			memberController.login(cmd);
+		}
+		
+		else if (cmd.equals("article add")) {
 			articleController.add(cmd);
 		}
 
